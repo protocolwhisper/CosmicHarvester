@@ -230,6 +230,7 @@ dependencies = [
  "futures",
  "jsonpath-rust",
  "reqwest",
+ "serde",
  "serde_json",
  "tendermint",
  "tendermint-rpc",

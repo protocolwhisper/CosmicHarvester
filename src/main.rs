@@ -1,3 +1,4 @@
+mod parser;
 use std::str::FromStr;
 
 //use cosmrs::tendermint-rpc::{Client, SubscriptionClient, WebSocketClient};
@@ -31,4 +32,16 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     Ok(())
+}
+#[cfg(test)]
+mod tests {
+
+    use jsonpath_rust::parser;
+
+    use crate::parser::auctiondetails::parse_lines;
+
+    #[test]
+    fn parsing_http_block() {
+        let buynow_event = parse_lines("./example-logs/historicalBlock.txt");
+    }
 }
