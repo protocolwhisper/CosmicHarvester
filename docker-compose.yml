@@ -1,0 +1,16 @@
+#This container is only for dev purposes
+version: '3.8'
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: pallet_listings
+      POSTGRES_USER: seidexer
+      POSTGRES_PASSWORD: seidexer123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

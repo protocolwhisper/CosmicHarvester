@@ -1,3 +1,4 @@
+mod db;
 mod parser;
 use std::str::FromStr;
 
@@ -11,9 +12,11 @@ use tendermint_rpc::query::Query;
 use std::fs::OpenOptions;
 use std::io::Write;
 
+use crate::db::pallet::insert_listing;
 use crate::parser::types::{EventData, PalletListing};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv::dotenv().ok();
     // Connect to the WebSocket endpoint of the Cosmos node
     let (client_ws, driver) =
         WebSocketClient::new("wss://rpc.ankr.com/sei/ws/c41b0a71a36f5853b6ef3868e1b04d42b9705940faef80d5f40dd34986319351")
@@ -55,21 +58,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                 listed: true,
                             };
 
-                            println!(
-                                "The contract address is: {:?}",
-                                event_data.wasm_create_auction_contract_address
-                            );
-
-                            println!(
-                                "The address of the nft is: {:?}",
-                                event_data.wasm_create_auction_nft_address
-                            );
-                            println!(
-                                "The token is: {:?}",
-                                event_data.wasm_create_auction_nft_token_id
-                            );
-
-                            println!("The owner is: {:?}", event_data.message_sender);
+                            if let Err(e) = insert_listing(listing).await {
+                                eprintln!("Failed to insert listing: {}", e);
+                            }
                         }
 
                         Err(_e) => {
@@ -80,8 +71,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 } else {
                     println!("Failed to serialize event.events to a JSON string");
                 }
-
-                // Additional processing...
             }
             Err(e) => println!("Error processing new block: {:?}", e),
         }
