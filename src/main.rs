@@ -13,9 +13,9 @@ use tendermint_rpc::query::Query;
 use std::fs::OpenOptions;
 use std::io::Write;
 
-use crate::db::pallet::{insert_listing, update_listing_to_unlisted, update_owner};
+use crate::db::pallet::{insert_listing, insert_sales, update_listing_to_unlisted, update_owner};
 use crate::parser::auctiondetails::parse_coin;
-use crate::parser::types::{BlockchainEvent, Coin, PalletListing, WasmCancelAuction};
+use crate::parser::types::{BlockchainEvent, Coin, PalletListing, Sales, WasmCancelAuction};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
@@ -79,6 +79,23 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         event_data.wasm_buy_now_nft_address[0].to_string();
                                     let token_id =
                                         event_data.wasm_buy_now_sale_price[0].to_string();
+                                    let block_height = event_data.tx_height[0].to_string();
+
+                                    // Need to the conversion
+
+                                    let buynow = Sales {
+                                        block_height: event_data.tx_height[0].to_string(),
+                                        nft_address: event_data.wasm_buy_now_nft_address[0]
+                                            .to_string(),
+                                        token_id: event_data.wasm_token_id[0].to_string(),
+                                        nft_owner: event_data.wasm_buy_now_nft_seller[0]
+                                            .to_string(),
+                                        previous_owner: event_data.transfer_recipient[0]
+                                            .to_string(),
+                                        txhash: event_data.tx_hash[0].to_string(),
+                                        sale_price: event_data.wasm_buy_now_sale_price[0]
+                                            .to_string(),
+                                    };
 
                                     if let Err(e) = update_owner(
                                         &pool,
@@ -91,11 +108,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                         eprintln!("Failed to update owner for BuyNow method {}", e);
                                     }
 
-                                    // I should inject this to the sales Table
-                                    // How shall i handle the update owner of it ? For keeping track
-                                    // We can eliminate the listing if needed
-                                    // Handle BuyNowEvent
-                                    println!("Handling BuyNowEvent");
+                                    if let Err(e) = insert_sales(&pool, buynow).await {
+                                        eprintln!("Failed to insert Sales: {}", e);
+                                    }
                                 }
                                 BlockchainEvent::CancelAuction(event_data) => {
                                     // Handle CancelAuctionEvent

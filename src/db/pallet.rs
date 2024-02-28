@@ -1,7 +1,7 @@
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 
-use crate::parser::types::PalletListing;
+use crate::parser::types::{PalletListing, Sales};
 
 pub async fn insert_listing(
     pool: &sqlx::Pool<sqlx::Postgres>,
@@ -75,5 +75,20 @@ pub async fn update_owner(
     .execute(pool)
     .await?;
 
+    Ok(())
+}
+
+pub async fn insert_sales(
+    pool: &sqlx::Pool<sqlx::Postgres>,
+    sales: Sales,
+) -> Result<(), sqlx::Error> {
+    sqlx::query!("INSERT INTO Sales (block_height , nft_address, token_id , nft_owner , previous_owner , txhash , sale_price) VALUES ($1, $2, $3, $4, $5, $6 , $7)",
+    sales.block_height,
+    sales.nft_address,
+    sales.token_id,
+    sales.nft_owner,
+    sales.previous_owner,
+    sales.txhash,
+    sales.sale_price).execute(pool).await?;
     Ok(())
 }

@@ -17,12 +17,13 @@ CREATE INDEX IF NOT EXISTS idx_txhash ON PalletListings(txhash);
 -- Corrected Sales table with missing comma
 CREATE TABLE IF NOT EXISTS Sales (
     sale_id BIGSERIAL PRIMARY KEY,
+    block_height VARCHAR(255) NOT NULL , 
     nft_address VARCHAR(255) NOT NULL,
     token_id VARCHAR(255), -- Corrected: Added missing comma
     nft_owner VARCHAR(255) NOT NULL,
     previous_owner VARCHAR(255) NOT NULL,
     txhash VARCHAR(255) NOT NULL,
-    sale_price NUMERIC(10, 2) NOT NULL
+    sale_price VARCHAR(255) NOT NULL
 );
 
 -- Corrected table name and column typo

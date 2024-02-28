@@ -198,3 +198,13 @@ pub struct Coin {
     pub denom: String,
     pub amount: u128,
 }
+
+pub struct Sales {
+    pub block_height: String,
+    pub nft_address: String,
+    pub token_id: String,
+    pub nft_owner: String,
+    pub previous_owner: String,
+    pub txhash: String,
+    pub sale_price: String,
+}
