@@ -1,8 +1,9 @@
-use super::types::{AuctionDetails};
-use std::fs::read_to_string;
+use super::types::{AuctionDetails, Coin};
+use std::{error::Error, fs::read_to_string};
 use serde_json::{Result, Value};
 use serde::{Deserialize, Serialize};
 use jsonpath_rust::{JsonPathFinder, JsonPathQuery, JsonPathInst, JsonPathValue};
+
 
 pub fn parse_line(line: &str) -> Vec<AuctionDetails>{
     let mut result = Vec::new();
@@ -56,3 +57,34 @@ pub fn parse_lines(filename: &str) {
         }
     }
 }
+
+
+
+pub fn parse_coin(input: &str) -> std::result::Result<Coin, &'static str> {
+    // Trim the leading and trailing brackets and quotes
+    let trimmed = input.trim_matches(|c| c == '[' || c == ']' || c == '\"');
+
+    // Directly trimming the known structure
+    if let Some(start) = trimmed.find("denom: \"") {
+        let remainder = &trimmed[start + 8..]; // Skip past "denom: \""
+        if let Some(end) = remainder.find("\",") {
+            let denom = &remainder[..end];
+            if let Some(amount_start) = remainder.find("Uint128(") {
+                let amount_part = &remainder[amount_start + 8..]; // Skip past "Uint128("
+                if let Some(amount_end) = amount_part.find(")") {
+                    let amount_str = &amount_part[..amount_end];
+                    if let Ok(amount) = amount_str.parse::<u128>() {
+                        return Ok(Coin {
+                            denom: denom.to_string(),
+                            amount,
+                        });
+                    }
+                }
+            }
+        }
+    }
+    Err("Failed to parse amount")
+}
+
+
+

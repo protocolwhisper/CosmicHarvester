@@ -126,7 +126,6 @@ pub struct BuyNowEvent {
     pub wasm_token_id: Vec<String>,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CancelAuctionEvent {
     coin_spent: CoinSpent,
@@ -187,11 +186,15 @@ pub struct WasmCancelAuction {
     pub nft_token_id: Vec<String>,
 }
 
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)] // Use the untagged attribute to allow for flexible deserialization
 pub enum BlockchainEvent {
     CreateAuction(CreateAuctionEvent),
     BuyNow(BuyNowEvent),
     CancelAuction(CancelAuctionEvent),
+}
+#[derive(Debug)]
+pub struct Coin {
+    pub denom: String,
+    pub amount: u128,
 }
