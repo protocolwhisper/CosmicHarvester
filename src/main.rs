@@ -4,7 +4,9 @@ use std::str::FromStr;
 
 //use cosmrs::tendermint-rpc::{Client, SubscriptionClient, WebSocketClient};
 use cosmrs::rpc::{Client, SubscriptionClient, WebSocketClient};
-use cosmrs::tx::Tx; // We don't need this yet
+use cosmrs::tx::Tx;
+use futures::io::Window;
+// We don't need this yet
 use futures::StreamExt;
 use sqlx::postgres::PgPoolOptions;
 use std::{env, fs};
@@ -15,7 +17,7 @@ use std::io::Write;
 
 use crate::db::pallet::{insert_listing, insert_sales, update_listing_to_unlisted, update_owner};
 use crate::parser::auctiondetails::parse_coin;
-use crate::parser::types::{BlockchainEvent, PalletListing, Sales};
+use crate::parser::types::{BlockchainEvent, PalletListing, Sales, Withdraw_listings};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
@@ -97,7 +99,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                             .to_string(),
                                     };
 
-                                    if let Err(e) = update_owner(
+                                    /* if let Err(e) = update_owner(
                                         &pool,
                                         &new_owner,
                                         &nft_contract_address,
@@ -106,7 +108,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     .await
                                     {
                                         eprintln!("Failed to update owner for BuyNow method {}", e);
-                                    }
+                                    } */
 
                                     if let Err(e) = insert_sales(&pool, buynow).await {
                                         eprintln!("Failed to insert Sales: {}", e);
@@ -119,17 +121,40 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     )
                                     .await
                                     {
-                                        eprint!("Failed to update listing")
+                                        eprint!("Failed to update listing : {}", e);
                                     }
 
                                     //Should we keep current owners in a different table?
                                 }
                                 BlockchainEvent::CancelAuction(event_data) => {
-                                    // Handle CancelAuctionEvent
                                     let nft_contract_address =
-                                        event_data.wasm_cancel_auction.nft_address;
-                                    let nft_token_id = event_data.wasm_cancel_auction.nft_token_id;
+                                        event_data.wasm_cancel_auction_nft_address[0].to_string();
+                                    let token_id =
+                                        event_data.wasm_cancel_auction_nft_token_id[0].to_string();
+                                    let w_listings = Withdraw_listings {
+                                        block_height: event_data.tx_height[0].to_string(),
+                                        nft_address: event_data.wasm_cancel_auction_nft_address[0]
+                                            .to_string(),
+                                        token_id: event_data.wasm_cancel_auction_nft_token_id[0]
+                                            .to_string(),
+                                        transaction_hash: event_data.tx_hash[0].to_string(),
+                                        withdraw_listing_price: event_data.coin_spent_amount[0]
+                                            .to_string(),
+                                    };
+
                                     if let Err(e) = update_listing_to_unlisted(
+                                        &pool,
+                                        &nft_contract_address,
+                                        &token_id,
+                                    )
+                                    .await
+                                    {
+                                        eprint!("Failed to update listing : {}", e);
+                                    }
+
+                                    // Handle CancelAuctionEvent
+
+                                    /* if let Err(e) = update_listing_to_unlisted(
                                         &pool,
                                         &nft_contract_address[0].to_string(),
                                         &nft_token_id[0].to_string(),
@@ -138,7 +163,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     {
                                         eprintln!("Failed to update listing: {}", e);
                                     }
-                                    println!("Handling CancelAuctionEvent");
+                                    println!("Handling CancelAuctionEvent"); */
                                 }
                             }
                         }

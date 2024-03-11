@@ -129,7 +129,7 @@ pub struct BuyNowEvent {
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CancelAuctionEvent {
     #[serde(rename = "coin_spent.amount")]
-    coin_spent_amount: Vec<String>,
+    pub coin_spent_amount: Vec<String>,
     #[serde(rename = "coin_spent.spender")]
     coin_spent_spender: Vec<String>,
     #[serde(rename = "execute._contract_address")]
@@ -149,17 +149,17 @@ pub struct CancelAuctionEvent {
     #[serde(rename = "tx.fee_payer")]
     tx_fee_payer: Vec<String>,
     #[serde(rename = "tx.hash")]
-    tx_hash: Vec<String>,
+    pub tx_hash: Vec<String>,
     #[serde(rename = "tx.height")]
-    tx_height: Vec<String>,
+    pub tx_height: Vec<String>,
     #[serde(rename = "tx.signature")]
     tx_signature: Vec<String>,
     #[serde(rename = "wasm-cancel_auction._contract_address")]
     wasm_cancel_auction_contract_address: Vec<String>,
     #[serde(rename = "wasm-cancel_auction.nft_address")]
-    wasm_cancel_auction_nft_address: Vec<String>,
+    pub wasm_cancel_auction_nft_address: Vec<String>,
     #[serde(rename = "wasm-cancel_auction.nft_token_id")]
-    wasm_cancel_auction_nft_token_id: Vec<String>,
+    pub wasm_cancel_auction_nft_token_id: Vec<String>,
     #[serde(rename = "wasm._contract_address")]
     wasm_contract_address: Vec<String>,
     #[serde(rename = "wasm.action")]
@@ -189,11 +189,16 @@ pub struct Sales {
     pub sale_price: String,
 }
 
-pub struct withdraw_listings {
+pub struct Withdraw_listings {
     pub block_height: String,
     pub nft_address: String,
     pub token_id: String,
     pub transaction_hash: String,
     pub withdraw_listing_price: String,
-    pub created_at: String,
+}
+
+#[derive(Debug)]
+pub struct Coin {
+    pub denom: String,
+    pub amount: u128,
 }

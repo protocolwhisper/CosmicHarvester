@@ -1,7 +1,7 @@
 use sqlx::postgres::PgPoolOptions;
 use std::env;
 
-use crate::parser::types::{withdraw_listings, PalletListing, Sales};
+use crate::parser::types::{PalletListing, Sales, Withdraw_listings};
 
 pub async fn insert_listing(
     pool: &sqlx::Pool<sqlx::Postgres>,
@@ -95,9 +95,9 @@ pub async fn insert_sales(
 
 pub async fn insert_withdraw(
     pool: &sqlx::Pool<sqlx::Postgres>,
-    withdraw: withdraw_listings,
+    withdraw: Withdraw_listings,
 ) -> Result<(), sqlx::Error> {
-    sqlx::query!("INSERT INTO WithdrawListings (block_height , nft_address , token_id , transaction_hash , withdraw_listing_price) VALUES ($1 , $2 , $3 , $4 , $5 )",
+    sqlx::query!("INSERT INTO WithdrawListings (block_height , nft_address , token_id , transaction_hash , withdraw_listing_price) VALUES ($1 , $2 , $3 , $4 , $5)",
     withdraw.block_height,
     withdraw.nft_address,
     withdraw.token_id,
