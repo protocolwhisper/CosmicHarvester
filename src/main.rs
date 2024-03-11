@@ -15,7 +15,7 @@ use std::io::Write;
 
 use crate::db::pallet::{insert_listing, insert_sales, update_listing_to_unlisted, update_owner};
 use crate::parser::auctiondetails::parse_coin;
-use crate::parser::types::{BlockchainEvent, Coin, PalletListing, Sales, WasmCancelAuction};
+use crate::parser::types::{BlockchainEvent, PalletListing, Sales};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
@@ -111,6 +111,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                                     if let Err(e) = insert_sales(&pool, buynow).await {
                                         eprintln!("Failed to insert Sales: {}", e);
                                     }
+
+                                    if let Err(e) = update_listing_to_unlisted(
+                                        &pool,
+                                        &nft_contract_address,
+                                        &token_id,
+                                    )
+                                    .await
+                                    {
+                                        eprint!("Failed to update listing")
+                                    }
+
+                                    //Should we keep current owners in a different table?
                                 }
                                 BlockchainEvent::CancelAuction(event_data) => {
                                     // Handle CancelAuctionEvent

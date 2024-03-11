@@ -128,75 +128,55 @@ pub struct BuyNowEvent {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct CancelAuctionEvent {
-    coin_spent: CoinSpent,
-    execute: ContractAddress,
-    message: Message,
+    #[serde(rename = "coin_spent.amount")]
+    coin_spent_amount: Vec<String>,
+    #[serde(rename = "coin_spent.spender")]
+    coin_spent_spender: Vec<String>,
+    #[serde(rename = "execute._contract_address")]
+    execute_contract_address: Vec<String>,
+    #[serde(rename = "message.action")]
+    message_action: Vec<String>,
+    #[serde(rename = "message.module")]
+    message_module: Vec<String>,
+    #[serde(rename = "message.sender")]
+    message_sender: Vec<String>,
     #[serde(rename = "tm.event")]
     tm_event: Vec<String>,
-    tx: Transaction,
-    wasm: WasmData,
-    #[serde(rename = "wasm-cancel_auction")]
-    pub wasm_cancel_auction: WasmCancelAuction,
+    #[serde(rename = "tx.acc_seq")]
+    tx_acc_seq: Vec<String>,
+    #[serde(rename = "tx.fee")]
+    tx_fee: Vec<String>,
+    #[serde(rename = "tx.fee_payer")]
+    tx_fee_payer: Vec<String>,
+    #[serde(rename = "tx.hash")]
+    tx_hash: Vec<String>,
+    #[serde(rename = "tx.height")]
+    tx_height: Vec<String>,
+    #[serde(rename = "tx.signature")]
+    tx_signature: Vec<String>,
+    #[serde(rename = "wasm-cancel_auction._contract_address")]
+    wasm_cancel_auction_contract_address: Vec<String>,
+    #[serde(rename = "wasm-cancel_auction.nft_address")]
+    wasm_cancel_auction_nft_address: Vec<String>,
+    #[serde(rename = "wasm-cancel_auction.nft_token_id")]
+    wasm_cancel_auction_nft_token_id: Vec<String>,
+    #[serde(rename = "wasm._contract_address")]
+    wasm_contract_address: Vec<String>,
+    #[serde(rename = "wasm.action")]
+    wasm_action: Vec<String>,
+    #[serde(rename = "wasm.recipient")]
+    wasm_recipient: Vec<String>,
+    #[serde(rename = "wasm.sender")]
+    wasm_sender: Vec<String>,
+    #[serde(rename = "wasm.token_id")]
+    wasm_token_id: Vec<String>,
 }
-
-#[derive(Serialize, Deserialize, Debug)]
-struct CoinSpent {
-    amount: Vec<String>,
-    spender: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct ContractAddress {
-    #[serde(rename = "_contract_address")]
-    contract_address: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Message {
-    action: Vec<String>,
-    module: Vec<String>,
-    sender: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct Transaction {
-    acc_seq: Vec<String>,
-    fee: Vec<String>,
-    fee_payer: Vec<String>,
-    hash: String,
-    height: String,
-    signature: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-struct WasmData {
-    #[serde(rename = "_contract_address")]
-    contract_address: Vec<String>,
-    action: Vec<String>,
-    recipient: Vec<String>,
-    sender: Vec<String>,
-    token_id: Vec<String>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
-pub struct WasmCancelAuction {
-    #[serde(rename = "_contract_address")]
-    pub contract_address: Vec<String>,
-    pub nft_address: Vec<String>,
-    pub nft_token_id: Vec<String>,
-}
-
 #[derive(Serialize, Deserialize, Debug)]
 #[serde(untagged)] // Use the untagged attribute to allow for flexible deserialization
 pub enum BlockchainEvent {
     CreateAuction(CreateAuctionEvent),
     BuyNow(BuyNowEvent),
     CancelAuction(CancelAuctionEvent),
-}
-#[derive(Debug)]
-pub struct Coin {
-    pub denom: String,
-    pub amount: u128,
 }
 
 pub struct Sales {
@@ -207,4 +187,13 @@ pub struct Sales {
     pub previous_owner: String,
     pub txhash: String,
     pub sale_price: String,
+}
+
+pub struct withdraw_listings {
+    pub block_height: String,
+    pub nft_address: String,
+    pub token_id: String,
+    pub transaction_hash: String,
+    pub withdraw_listing_price: String,
+    pub created_at: String,
 }
