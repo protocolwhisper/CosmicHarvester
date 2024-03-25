@@ -26,7 +26,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pool = PgPoolOptions::new().connect(&database_url).await?;
     // Connect to the WebSocket endpoint of the Cosmos node
     let (client_ws, driver) =
-        WebSocketClient::new("wss://rpc.ankr.com/sei/ws/c41b0a71a36f5853b6ef3868e1b04d42b9705940faef80d5f40dd34986319351")
+        WebSocketClient::new("")
             .await
             .expect("Failed to connect to WebSocket");
     tokio::spawn(driver.run());
